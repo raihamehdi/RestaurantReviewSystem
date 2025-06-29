@@ -1,0 +1,1 @@
+Basically this project is for adding reviews of restaurants for the foodie ones. It is a basic project of django connected with redis board which automatically add sentiment analysis and uploads the reviews. This project is beginner friendly for backend developers.
