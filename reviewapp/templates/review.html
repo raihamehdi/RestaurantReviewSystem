@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submit a Review</title>
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .nav-links {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .nav-links a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Submit a Review</h1>
+    <form id="reviewForm">
+      <input type="text" id="name" placeholder="Restaurant Name" required>
+      <textarea id="text" placeholder="Write your review here..." required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+
+    <p id="result"></p>
+
+    <div class="nav-links">
+      <a href="{% url 'index' %}">← Back to Home</a>
+      <a href="{% url 'get_leaderboard' %}">🏆 View Leaderboard</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('reviewForm').onsubmit = async function (e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const text = document.getElementById('text').value;
+      const csrfToken = document.querySelector('[name=csrf-token]').content;
+
+      const res = await fetch('/api/review/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ name, text })
+      });
+
+      const resultElem = document.getElementById('result');
+      if (res.ok) {
+        const data = await res.json();
+        resultElem.innerText = `✅ Sentiment Score: ${data.sentiment_score.toFixed(2)}`;
+        resultElem.style.color = 'green';
+        document.getElementById('reviewForm').reset();
+      } else {
+        const err = await res.json();
+        resultElem.innerText = `❌ Error: ${err.error || "Something went wrong"}`;
+        resultElem.style.color = 'red';
+      }
+    };
+  </script>
+
+</body>
+</html>

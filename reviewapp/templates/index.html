@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Restaurant</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Add New Restaurant</h1>
+
+    <form id="restaurantForm">
+      <label for="name">Restaurant Name:</label>
+      <input type="text" id="name" placeholder="Enter name..." required />
+      <button type="submit">Add</button>
+    </form>
+
+    <p class="message" id="message"></p>
+
+    <div style="text-align:center; margin-top: 20px;">
+      <a href="{% url 'review' %}">Write a Review</a> | 
+      <a href="{% url 'get_leaderboard' %}">View Leaderboard</a>
+    </div>
+  </div>
+
+<script>
+    document.getElementById('restaurantForm').onsubmit = async function (e) {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+
+        const csrftoken = document.querySelector('[name=csrf-token]').content;
+
+        const res = await fetch('/api/restaurant/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({ name })
+        });
+
+        if (res.ok) {
+        const data = await res.json();
+        document.getElementById('message').innerText = `Added: ${data.name}`;
+        document.getElementById('restaurantForm').reset();
+        } else {
+        document.getElementById('message').innerText = 'Error adding restaurant.';
+        }
+    }
+</script>
+
+</body>
+</html>
