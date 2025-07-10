@@ -1,0 +1,1 @@
+Allow users to submit reviews for restaurants and automatically classify reviews as positive or negative using Natural Language Processing (NLP). Additionally, the app ranks restaurants based on the sentiment of their reviews using a Redis-based leaderboard. This project is beginner-friendly for backend developers.
